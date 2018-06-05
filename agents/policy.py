@@ -29,6 +29,6 @@ class EpsGreedyQPolicy(Policy):
 
         return action
 
-    def decay_epsilon():
+    def decay_epsilon():    # 探索率を減少
         self.epsilon = self.epsilon*self.decay_rate
 

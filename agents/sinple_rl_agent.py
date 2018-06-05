@@ -22,14 +22,10 @@ class Agent(metaclass=ABCMeta):
     def get_reward(self, reward):
         pass
 
-    @abstractmethod
-    def observe(self, next_state):
-        pass
-
 
 class SimpleRLAgent(Agent):
     """
-        state less な強化学習エージェント
+        シンプルな強化学習エージェント
     """
     def __init__(self, action_list=None, **kwargs):
         """
@@ -38,9 +34,9 @@ class SimpleRLAgent(Agent):
         :param kwargs:
         """
         super().__init__(**kwargs)
-        self.action_list = action_list
+        self.action_list = action_list  # 選択肢
         self.last_action_id = None
-        self.q_values = self._init_q_values()
+        self.q_values = self._init_q_values()   # 期待報酬値の初期化
 
     def _init_q_values(self):
         q_values = {}
@@ -48,19 +44,14 @@ class SimpleRLAgent(Agent):
         return q_values
 
     def act(self, q_values=None):
-        action_id = None
-        action_id = self.policy.select_action(self.q_values)
-
+        action_id = self.policy.select_action(self.q_values)    # 行動選択
         self.last_action_id = action_id
         action = self.action_list[action_id]
         return action
 
     def get_reward(self, reward):
         self.reward_history.append(reward)
-        self.q_values[self.last_action_id] = self._update_q_value(reward)
-
-    def observe(self, next_state):
-        pass
+        self.q_values[self.last_action_id] = self._update_q_value(reward)   # 期待報酬値の更新
 
     def _update_q_value(self, reward):
-        return ((1.0 - self.alpha) * self.q_values[self.last_action_id]) + (self.alpha * reward)
+        return ((1.0 - self.alpha) * self.q_values[self.last_action_id]) + (self.alpha * reward) # 通常の指数移動平均で更新
