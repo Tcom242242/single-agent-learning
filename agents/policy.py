@@ -38,12 +38,12 @@ class EpsGreedyQPolicy(Policy):
 class UCB(Policy):
     def __init__(self, c, actions):
         super(UCB, self).__init__()
-        self.average_rewards = np.repeat(0.0, len(actions))
-        self.ucbs = np.repeat(10.0, len(actions))
-        self.all_conter = 0
-        self.counters = np.repeat(0, len(actions))
-        self.name = "UCB"
+        self.average_rewards = np.repeat(0.0, len(actions)) # 各腕の平均報酬
+        self.ucbs = np.repeat(10.0, len(actions))   # UCB値
+        self.counters = np.repeat(0, len(actions))  # 各腕の試行回数
         self.c = c
+        self.all_conter = 0 # 全試行回数
+        self.name = "UCB"
 
     def select_action(self):
         action_id = np.argmax(self.ucbs)
@@ -52,7 +52,7 @@ class UCB(Policy):
         return action_id
 
     def update_usbs(self, action_id, reward):
-        self.ucbs[action_id] = self.average_rewards[action_id] + 0.5 * math.log(self.all_conter)/np.sqrt(self.counters[action_id])
+        self.ucbs[action_id] = self.average_rewards[action_id] + self.c * math.log(self.all_conter)/np.sqrt(self.counters[action_id])
 
     def update_average_rewards(self, action_id, reward):
         self.average_rewards[action_id] = (self.counters[action_id]*self.average_rewards[action_id]+reward)/(self.counters[action_id]+1)
